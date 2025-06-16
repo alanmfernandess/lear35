@@ -1,1 +1,224 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Calculadora de N1 com Interpolação</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 480px;
+      margin: 2rem auto;
+      padding: 1rem;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      line-height: 1.4;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 1.5rem;
+    }
+    .form-group {
+      margin-bottom: 1rem;
+    }
+    label {
+      display: block;
+      margin-bottom: 0.3rem;
+      font-weight: bold;
+    }
+    input {
+      width: 100%;
+      padding: 0.5rem;
+      font-size: 1rem;
+      box-sizing: border-box;
+    }
+    button {
+      width: 100%;
+      padding: 0.7rem;
+      font-size: 1rem;
+      margin-top: 0.5rem;
+      cursor: pointer;
+    }
+    #result {
+      margin-top: 1.5rem;
+      font-size: 1.2rem;
+      text-align: center;
+      padding: 0.8rem;
+      border-radius: 4px;
+      background: #f9f9f9;
+      border: 1px solid #ccc;
+      min-height: 2em;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Calculadora de N1 (Anti-Ice OFF)</h1>
+
+  <div class="form-group">
+    <label for="tempInput">OAT (°C):</label>
+    <input id="tempInput" type="number" step="0.1" placeholder="Ex: 32.5"/>
+  </div>
+
+  <div class="form-group">
+    <label for="altInput">Altitude (ft):</label>
+    <input id="altInput" type="number" step="1" placeholder="Ex: 2750"/>
+  </div>
+
+  <button id="calcBtn">Calcular N1</button>
+
+  <div id="result">Insira temperatura e altitude e clique em “Calcular N1”.</div>
+
+  <script>
+    // --- Dados extraídos da tabela original (0–10000 ft e –51 °C a +49 °C) ---
+    const temperatures = [
+      -51, -46, -40, -34, -29, -23, -18, -15, -12, -9, -7,
+      -4, -1,   2,   4,   7,  10,  13,  16, 18, 21, 24,
+      27, 29,  32,  35,  38,  41,  43,  46,  49
+    ];
+    const altitudes = [0, 1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000];
+    const n1Values = [
+      // -51°C
+      [84.0, 84.8, 85.6, 86.6, 87.5, 88.3, 89.3, 90.0, 90.8, 92.2, 93.8],
+      // -46°C
+      [85.0, 85.8, 86.6, 87.6, 88.5, 89.4, 90.3, 91.0, 91.8, 93.3, 94.9],
+      // -40°C
+      [86.0, 86.8, 87.6, 88.6, 89.6, 90.4, 91.3, 92.1, 92.9, 94.4, 96.0],
+      // -34°C
+      [86.9, 87.8, 88.6, 89.6, 90.6, 91.5, 92.4, 93.1, 94.0, 95.4, 97.1],
+      // -29°C
+      [87.9, 88.8, 89.5, 90.6, 91.6, 92.5, 93.4, 94.2, 95.0, 96.5, 98.2],
+      // -23°C
+      [88.9, 89.8, 90.5, 91.6, 92.6, 93.6, 94.4, 95.2, 96.1, 97.6, 99.2],
+      // -18°C
+      [89.8, 90.8, 91.6, 92.6, 93.7, 94.6, 95.5, 96.3, 97.2, 98.6, 100.0],
+      // -15°C
+      [90.4, 91.2, 92.0, 93.1, 94.2, 95.1, 96.0, 96.8, 97.7, 99.2, 100.0],
+      // -12°C
+      [90.8, 91.8, 92.6, 93.6, 94.7, 95.7, 96.5, 97.4, 98.2, 99.7, 100.0],
+      // -9°C
+      [91.4, 92.3, 93.0, 94.2, 95.2, 96.2, 97.0, 97.9, 98.7, 100.0, 100.0],
+      // -7°C
+      [91.9, 92.8, 93.6, 94.7, 95.8, 96.7, 97.6, 98.4, 99.2, 99.8, 99.8],
+      // -4°C
+      [92.4, 93.4, 94.1, 95.2, 96.3, 97.2, 98.1, 99.0, 99.6, 99.6, 99.6],
+      // -1°C
+      [92.9, 93.9, 94.6, 95.7, 96.8, 97.8, 98.6, 99.4, 99.4, 99.4, 99.4],
+      // +2°C
+      [93.4, 94.4, 95.2, 96.2, 97.3, 98.3, 99.1, 99.1, 99.1, 99.1, 99.1],
+      // +4°C
+      [94.0, 95.0, 95.7, 96.7, 97.8, 98.8, 98.8, 98.8, 98.8, 98.8, 98.8],
+      // +7°C
+      [94.4, 95.4, 96.2, 97.2, 98.3, 98.6, 98.6, 98.6, 98.6, 98.6, 98.6],
+      // +10°C
+      [95.0, 96.0, 96.7, 97.8, 98.3, 98.3, 98.3, 98.3, 98.3, 98.3, 98.3],
+      // +13°C
+      [95.5, 96.5, 97.2, 97.9, 97.9, 97.9, 97.9, 97.9, 97.9, 97.9, 97.9],
+      // +16°C
+      [96.0, 97.0, 97.5, 97.5, 97.5, 97.5, 97.5, 97.5, 97.5, 97.5, 97.5],
+      // +18°C
+      [96.5, 97.1, 97.1, 97.1, 97.1, 97.1, 97.1, 97.1, 97.1, 97.1, 97.1],
+      // +21°C
+      [96.6, 96.6, 96.6, 96.6, 96.6, 96.6, 96.6, 96.6, 96.6, 96.6, 96.6],
+      // +24°C
+      [96.0, 96.0, 96.0, 96.0, 96.0, 96.0, 96.0, 96.0, 96.0, 96.0, 96.0],
+      // +27°C
+      [95.4, 95.4, 95.4, 95.4, 95.4, 95.4, 95.4, 95.4, 95.4, 95.4, 95.4],
+      // +29°C
+      [94.7, 94.7, 94.7, 94.7, 94.7, 94.7, 94.7, 94.7, 94.7, 94.7, 94.7],
+      // +32°C
+      [94.0, 94.0, 94.0, 94.0, 94.0, 94.0, 94.0, 94.0, 94.0, 94.0,  null],
+      // +35°C
+      [93.1, 93.1, 93.1, 93.1, 93.1, 93.1, 93.1, 93.1, 93.1,  null,  null],
+      // +38°C
+      [92.2, 92.2, 92.2, 92.2, 92.2, 92.2, 92.2, 92.2,  null,  null,  null],
+      // +41°C
+      [91.3, 91.3, 91.3, 91.3, 91.3, 91.3,  null,  null,  null,  null,  null],
+      // +43°C
+      [90.4, 90.4, 90.4, 90.4, 90.4,  null,  null,  null,  null,  null,  null],
+      // +46°C
+      [89.4, 89.4, 89.4, 89.4,  null,  null,  null,  null,  null,  null,  null],
+      // +49°C
+      [88.4, 88.4,  null,  null,  null,  null,  null,  null,  null,  null,  null]
+    ];
+
+    // localiza índices vizinhos (ou igual) numa array ordenada
+    function findBracketingIndices(arr, val) {
+      if (val <= arr[0])  return { lo: 0,   hi: 0 };
+      if (val >= arr[arr.length-1]) return { lo: arr.length-1, hi: arr.length-1 };
+      for (let k = 1; k < arr.length; k++) {
+        if (val === arr[k])      return { lo: k,   hi: k   };
+        if (val <  arr[k])      return { lo: k-1, hi: k   };
+      }
+      // nunca deve chegar aqui
+      return { lo: 0, hi: 0 };
+    }
+
+    // calcula via interpolação bilinear
+    function calculateN1(temp, alt) {
+      const ti = findBracketingIndices(temperatures, temp);
+      const ai = findBracketingIndices(altitudes,    alt);
+      const T_lo = temperatures[ti.lo], T_hi = temperatures[ti.hi];
+      const A_lo = altitudes[ai.lo],    A_hi = altitudes[ai.hi];
+
+      const f00 = n1Values[ti.lo][ai.lo];
+      const f10 = n1Values[ti.hi][ai.lo];
+      const f01 = n1Values[ti.lo][ai.hi];
+      const f11 = n1Values[ti.hi][ai.hi];
+
+      // fora de dados ou ponto faltante
+      if ([f00,f10,f01,f11].some(v=>v==null)) return null;
+
+      // se ponto exato
+      if (ti.lo === ti.hi && ai.lo === ai.hi) {
+        return f00;
+      }
+      // interpolação unidimensional em temperatura
+      if (ti.lo !== ti.hi && ai.lo === ai.hi) {
+        const t = (temp - T_lo) / (T_hi - T_lo);
+        return f00 * (1 - t) + f10 * t;
+      }
+      // interpolação unidimensional em altitude
+      if (ti.lo === ti.hi && ai.lo !== ai.hi) {
+        const u = (alt - A_lo) / (A_hi - A_lo);
+        return f00 * (1 - u) + f01 * u;
+      }
+      // interpolação bilinear
+      const t = (temp - T_lo) / (T_hi - T_lo);
+      const u = (alt - A_lo) / (A_hi - A_lo);
+      return (
+        f00 * (1 - t) * (1 - u) +
+        f10 * t       * (1 - u) +
+        f01 * (1 - t) * u       +
+        f11 * t       * u
+      );
+    }
+
+    // evento do botão
+    document.getElementById("calcBtn").addEventListener("click", () => {
+      const temp = parseFloat(document.getElementById("tempInput").value);
+      const alt  = parseFloat(document.getElementById("altInput").value);
+      const out  = document.getElementById("result");
+
+      if (isNaN(temp) || isNaN(alt)) {
+        out.textContent = "⚠️ Insira valores numéricos válidos.";
+        return;
+      }
+      if (temp < temperatures[0] || temp > temperatures[temperatures.length-1]
+       || alt  < altitudes[0]    || alt  > altitudes[altitudes.length-1]) {
+        out.textContent = "⚠️ Fora da faixa de dados.";
+        return;
+      }
+      const n1 = calculateN1(temp, alt);
+      if (n1 == null) {
+        out.textContent = "⚠️ Não foi possível interpolar (dados faltantes).";
+      } else {
+        out.innerHTML = `✅ <strong>N1 interpolado:</strong> ${n1.toFixed(1)} %`;
+      }
+    });
+  </script>
+
+</body>
+</html>
 
