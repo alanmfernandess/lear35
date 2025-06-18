@@ -3,438 +3,407 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Takeoff Performance Calculators</title>
-    
-    <!-- Incluindo Tailwind CSS para um design moderno e responsivo -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- Incluindo a fonte Inter do Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    
+    <title>Calculadora de Desempenho de Decolagem - Learjet 35/36</title>
     <style>
-        /* Estilo customizado para usar a fonte Inter */
+        /* Estilos Gerais */
         body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f8fafc; /* Cor de fundo "Céu Limpo" (slate-50) */
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            background-color: #f4f7f9;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
         }
 
-        /* Animação para a barra de progresso horizontal */
-        .n1-progress-bar, #weight-progress-bar {
-            transition: width 0.8s cubic-bezier(0.65, 0, 0.35, 1), background-color 0.5s ease;
+        /* Container Principal */
+       .calculator-container {
+            background-color: #ffffff;
+            padding: 25px 30px;
+            border-radius: 12px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 600px;
+            border: 1px solid #e0e0e0;
         }
 
-        /* Estilo para animação de fade-in e scale-up */
-        .fade-in-up {
-            animation: fadeInUp 0.6s ease-out forwards;
-            opacity: 0;
+        /* Cabeçalho */
+        header h1 {
+            color: #1a2b48;
+            font-size: 1.8em;
+            margin-bottom: 5px;
+            text-align: center;
         }
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(15px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+
+        header p {
+            text-align: center;
+            color: #667;
+            margin-bottom: 25px;
+            font-size: 0.95em;
+        }
+
+        /* Formulário e Entradas */
+       .input-group {
+            margin-bottom: 20px;
+        }
+
+       .input-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #445;
+        }
+
+       .input-group input,
+       .input-group select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 1em;
+            box-sizing: border-box;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+       .input-group input:focus,
+       .input-group select:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.2);
+        }
+
+        /* Botão */
+        button {
+            width: 100%;
+            padding: 15px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.1s;
+        }
+
+        button:hover {
+            background-color: #0056b3;
         }
         
-        /* Ajustes de foco para acessibilidade */
-        input:focus, select:focus, button:focus {
-            outline: none;
-        }
-        input:focus-visible, select:focus-visible {
-             box-shadow: 0 0 0 2px #f8fafc, 0 0 0 4px #1d4ed8;
+        button:active {
+            transform: scale(0.99);
         }
 
-        /* Estilos para as abas */
-        .tab-button {
-            transition: all 0.3s ease;
+        /* Seção de Resultados */
+        #results {
+            margin-top: 25px;
+            padding: 20px;
+            background-color: #e9f5ff;
+            border: 1px solid #b3d7ff;
+            border-radius: 8px;
         }
-        .tab-button.active {
-            background-color: #1d4ed8;
-            color: white;
+        
+        #results.hidden {
+            display: none;
+        }
+
+        #results h2 {
+            margin-top: 0;
+            color: #0056b3;
+            border-bottom: 2px solid #b3d7ff;
+            padding-bottom: 10px;
+        }
+
+       .result-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+       .result-item {
+            background-color: #fff;
+            padding: 15px;
+            border-radius: 6px;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+       .result-item.label {
+            font-weight: 600;
+            color: #333;
+            font-size: 0.9em;
+            display: block;
+        }
+
+       .result-item.value {
+            font-size: 1.8em;
+            font-weight: 700;
+            color: #007bff;
+        }
+        
+       .result-item.unit {
+            font-size: 0.9em;
+            color: #555;
+            margin-left: 5px;
+        }
+
+        /* Rodapé e Avisos */
+       .assumptions, #error-message {
+            margin-top: 20px;
+            padding: 15px;
+            font-size: 0.85em;
+            border-radius: 6px;
+        }
+        
+       .assumptions {
+            background-color: #f0f0f0;
+            border-left: 4px solid #777;
+            color: #555;
+        }
+        
+        #error-message {
+            background-color: #ffebee;
+            color: #c62828;
+            border-left: 4px solid #c62828;
+            display: none; /* Oculto por padrão */
+        }
+
+        /* Responsividade */
+        @media (max-width: 480px) {
+           .result-grid {
+                grid-template-columns: 1fr;
+            }
+            header h1 {
+                font-size: 1.5em;
+            }
         }
     </style>
 </head>
-<body class="flex items-center justify-center min-h-screen p-4">
+<body>
 
-    <main class="w-full max-w-sm p-6 sm:p-8 bg-white rounded-2xl shadow-lg">
-        
-        <!-- Abas de Navegação -->
-        <div class="grid grid-cols-3 bg-slate-100 rounded-lg p-1 mb-6">
-            <button id="tab-btn-full" class="tab-button active w-full py-2 text-sm font-bold text-slate-600 rounded-md">Full Power</button>
-            <button id="tab-btn-partial" class="tab-button w-full py-2 text-sm font-bold text-slate-600 rounded-md">Partial Power</button>
-            <button id="tab-btn-weight" class="tab-button w-full py-2 text-sm font-bold text-slate-600 rounded-md">Weight Limits</button>
+    <div class="calculator-container">
+        <header>
+            <h1>Calculadora de Desempenho de Decolagem</h1>
+            <p>Bombardier Learjet 35/36 (Flaps 8°)</p>
+        </header>
+
+        <div class="input-group">
+            <label for="altitude">Altitude Pressão (Pés)</label>
+            <select id="altitude">
+                <option value="0">Nível do Mar (Sea Level)</option>
+                <option value="1000">1000 Pés</option>
+                <option value="2000">2000 Pés</option>
+            </select>
         </div>
 
-        <!-- Conteúdo da Calculadora de Full Power -->
-        <div id="calculator-full">
-            <header class="text-center mb-6">
-                <h1 class="text-lg sm:text-xl font-bold text-slate-800 tracking-wide">Takeoff Power Settings (N1%) AI OFF</h1>
-            </header>
-            <div class="space-y-4">
-                <div>
-                    <label for="altitude_full" class="text-sm font-semibold text-slate-600">Altitude (Ft)</label>
-                    <input type="number" id="altitude_full" placeholder="Ex: 9000" class="mt-1 block w-full px-4 py-3 bg-slate-100 border border-slate-200 rounded-lg text-slate-900 placeholder-slate-400 transition-all duration-300">
-                </div>
-                <div>
-                    <label for="temperature_full" class="text-sm font-semibold text-slate-600">OAT</label>
-                    <div class="mt-1 flex gap-2">
-                        <input type="number" id="temperature_full" placeholder="Ex: 90" class="w-full px-4 py-3 bg-slate-100 border border-slate-200 rounded-lg text-slate-900 placeholder-slate-400 z-10 transition-all duration-300">
-                        <select id="temp-unit_full" class="bg-slate-200 text-slate-800 font-medium rounded-lg px-4 border border-slate-200 transition-all duration-300">
-                            <option value="C">°C</option>
-                            <option value="F" selected>°F</option>
-                        </select>
-                    </div>
-                </div>
-            </div>
-            <div class="mt-8">
-                <button id="calculate-btn-full" class="w-full bg-blue-700 text-white font-bold py-3 px-4 rounded-lg hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-400/50 transition-all duration-300 active:scale-[0.98]">Calcular Potência N1:</button>
-            </div>
-             <div id="result-container-full" class="mt-6">
-                 <div id="bar-display-full" class="w-full">
-                    <div>
-                        <div class="bg-slate-200 rounded-lg h-6 w-full overflow-hidden">
-                            <div id="n1-progress-bar-full" class="n1-progress-bar h-6 rounded-lg bg-emerald-500" style="width: 0%;"></div>
-                        </div>
-                         <div class="flex justify-between text-xs font-medium text-slate-500 px-1 mt-1">
-                            <span>0</span><span>20</span><span>40</span><span>60</span><span>80</span><span>100</span>
-                        </div>
-                    </div>
-                    <div class="text-center text-2xl font-bold text-slate-800 pt-4">
-                         <span id="n1-value-display-full">0.0%</span>
-                    </div>
-                </div>
-                <div id="error-display-full" class="hidden"></div>
-            </div>
+        <div class="input-group">
+            <label for="temperature">Temperatura (°C)</label>
+            <input type="number" id="temperature" placeholder="Ex: 15" value="15">
         </div>
-        
-        <!-- Conteúdo da Calculadora de Partial Power -->
-        <div id="calculator-partial" class="hidden">
-            <header class="text-center mb-6">
-                <h1 class="text-lg sm:text-xl font-bold text-slate-800 tracking-wide">Partial Power Takeoff N1 Setting AI OFF</h1>
-            </header>
-            <div class="space-y-4">
-                 <div>
-                    <label for="oat_partial" class="text-sm font-semibold text-slate-600">Outside Air Temp. (OAT)</label>
-                    <div class="mt-1 flex gap-2">
-                        <input type="number" id="oat_partial" placeholder="Ex: 30" class="w-full px-4 py-3 bg-slate-100 border border-slate-200 rounded-lg text-slate-900 placeholder-slate-400 z-10 transition-all duration-300">
-                        <select id="oat-unit_partial" class="bg-slate-200 text-slate-800 font-medium rounded-lg px-4 border border-slate-200 transition-all duration-300">
-                            <option value="C">°C</option>
-                            <option value="F" selected>°F</option>
-                        </select>
-                    </div>
+
+        <div class="input-group">
+            <label for="weight">Peso (lbs)</label>
+            <input type="number" id="weight" placeholder="Ex: 16000" value="16000">
+        </div>
+
+        <button id="calculate-btn">Calcular</button>
+
+        <div id="error-message"></div>
+
+        <div id="results" class="hidden">
+            <h2>Resultados de Desempenho</h2>
+            <div class="result-grid">
+                <div class="result-item">
+                    <span class="label">V1 (Velocidade de Decisão)</span>
+                    <div><span id="v1-result" class="value"></span><span class="unit">nós</span></div>
                 </div>
-                <div>
-                    <label for="assumed_temp_partial" class="text-sm font-semibold text-slate-600">Assumed Temperature</label>
-                    <div class="mt-1 flex gap-2">
-                        <input type="number" id="assumed_temp_partial" placeholder="Ex: 80" class="w-full px-4 py-3 bg-slate-100 border border-slate-200 rounded-lg text-slate-900 placeholder-slate-400 z-10 transition-all duration-300">
-                        <select id="assumed-unit_partial" class="bg-slate-200 text-slate-800 font-medium rounded-lg px-4 border border-slate-200 transition-all duration-300">
-                            <option value="C">°C</option>
-                            <option value="F" selected>°F</option>
-                        </select>
-                    </div>
+                <div class="result-item">
+                    <span class="label">Distância de Decolagem</span>
+                    <div><span id="dist-result" class="value"></span><span class="unit">pés</span></div>
                 </div>
-            </div>
-             <div class="mt-8">
-                <button id="calculate-btn-partial" class="w-full bg-blue-700 text-white font-bold py-3 px-4 rounded-lg hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-400/50 transition-all duration-300 active:scale-[0.98]">Calcular Potência N1:</button>
-            </div>
-            <div id="result-container-partial" class="mt-6">
-                 <div id="bar-display-partial" class="w-full">
-                    <div>
-                        <div class="bg-slate-200 rounded-lg h-6 w-full overflow-hidden">
-                            <div id="n1-progress-bar-partial" class="n1-progress-bar h-6 rounded-lg bg-emerald-500" style="width: 0%;"></div>
-                        </div>
-                         <div class="flex justify-between text-xs font-medium text-slate-500 px-1 mt-1">
-                            <span>0</span><span>20</span><span>40</span><span>60</span><span>80</span><span>100</span>
-                        </div>
-                    </div>
-                    <div class="text-center text-2xl font-bold text-slate-800 pt-4">
-                         <span id="n1-value-display-partial">0.0%</span>
-                    </div>
+                <div class="result-item">
+                    <span class="label">VR (Velocidade de Rotação)</span>
+                    <div><span id="vr-result" class="value"></span><span class="unit">nós</span></div>
                 </div>
-                <div id="error-display-partial" class="hidden"></div>
+                <div class="result-item">
+                    <span class="label">V2 (Velocidade de Segurança)</span>
+                    <div><span id="v2-result" class="value"></span><span class="unit">nós</span></div>
+                </div>
             </div>
         </div>
 
-        <!-- Conteúdo da Calculadora de Weight Limits -->
-        <div id="calculator-weight" class="hidden">
-            <header class="text-center mb-6">
-                <h1 class="text-lg sm:text-xl font-bold text-slate-800 tracking-wide">Takeoff Weight Limits - Flaps 8°</h1>
-            </header>
-            <div class="space-y-4">
-                <div>
-                    <label for="altitude_weight" class="text-sm font-semibold text-slate-600">Pressure Altitude (Ft)</label>
-                    <input type="number" id="altitude_weight" placeholder="Ex: 5000" class="mt-1 block w-full px-4 py-3 bg-slate-100 border border-slate-200 rounded-lg text-slate-900 placeholder-slate-400 transition-all duration-300">
-                </div>
-                <div>
-                    <label for="temperature_weight" class="text-sm font-semibold text-slate-600">Temperature</label>
-                    <div class="mt-1 flex gap-2">
-                        <input type="number" id="temperature_weight" placeholder="Ex: 80" class="w-full px-4 py-3 bg-slate-100 border border-slate-200 rounded-lg text-slate-900 placeholder-slate-400 z-10 transition-all duration-300">
-                        <select id="temp-unit_weight" class="bg-slate-200 text-slate-800 font-medium rounded-lg px-4 border border-slate-200 transition-all duration-300">
-                            <option value="C">°C</option>
-                            <option value="F" selected>°F</option>
-                        </select>
-                    </div>
-                </div>
-            </div>
-             <div class="mt-8">
-                <button id="calculate-btn-weight" class="w-full bg-blue-700 text-white font-bold py-3 px-4 rounded-lg hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-400/50 transition-all duration-300 active:scale-[0.98]">Calcular Limite de Peso:</button>
-            </div>
-            <div id="result-container-weight" class="mt-6">
-                <div id="bar-display-weight" class="w-full">
-                    <div>
-                        <div class="bg-slate-200 rounded-lg h-6 w-full overflow-hidden">
-                            <div id="weight-progress-bar" class="h-6 rounded-lg bg-emerald-500" style="width: 0%;"></div>
-                        </div>
-                    </div>
-                    <div class="text-center text-2xl font-bold text-slate-800 pt-4">
-                         <span id="weight-value-display">0 lbs</span>
-                    </div>
-                </div>
-                <div id="error-display-weight" class="hidden"></div>
-            </div>
+        <div class="assumptions">
+            <strong>Condições de Linha de Base:</strong> Estes dados foram determinados para pista seca, vento zero, gradiente de pista zero, anti-gelo desligado e anti-derrapante ligado. Ajustes adicionais são necessários para condições do mundo real.
         </div>
-
-        <footer class="text-center text-xs text-slate-500 mt-8 pt-6 border-t border-slate-200">
-            Alan Fernandes 2025 - Todos os direitos reservados.
-        </footer>
-    </main>
+    </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
+        // --- BANCO DE DADOS DE DESEMPENHO ---
+        // Transcrição da tabela de desempenho da imagem.
+        const performanceData = {
+            0: { // Nível do Mar
+                18300: {'-18':{v1:136,dist:4686}, '-7':{v1:136,dist:4857}, '4':{v1:136,dist:5029}, '16':{v1:136,dist:5201}, '27':{v1:137,dist:5942}, '38':{v1:141,dist:7370}},
+                18000: {'-18':{v1:134,dist:4530}, '-7':{v1:134,dist:4695}, '4':{v1:134,dist:4860}, '16':{v1:134,dist:5025}, '27':{v1:136,dist:5732}, '38':{v1:139,dist:7088}},
+                17000: {'-18':{v1:128,dist:4010}, '-7':{v1:128,dist:4152}, '4':{v1:128,dist:4295}, '16':{v1:128,dist:4437}, '27':{v1:130,dist:5031}, '38':{v1:134,dist:6149}},
+                16000: {'-18':{v1:122,dist:3550}, '-7':{v1:122,dist:3675}, '4':{v1:122,dist:3800}, '16':{v1:122,dist:3925}, '27':{v1:124,dist:4412}, '38':{v1:128,dist:5285}},
+                15000: {'-18':{v1:115,dist:3127}, '-7':{v1:115,dist:3229}, '4':{v1:115,dist:3330}, '16':{v1:115,dist:3431}, '27':{v1:118,dist:3857}, '38':{v1:122,dist:4663}},
+                14000: {'-18':{v1:109,dist:2744}, '-7':{v1:109,dist:2841}, '4':{v1:109,dist:2938}, '16':{v1:109,dist:3035}, '27':{v1:112,dist:3412}, '38':{v1:116,dist:4090}},
+                13000: {'-18':{v1:104,dist:2382}, '-7':{v1:104,dist:2461}, '4':{v1:104,dist:2540}, '16':{v1:104,dist:2619}, '27':{v1:106,dist:2925}, '38':{v1:110,dist:3475}},
+                12000: {'-18':{v1:103,dist:2242}, '-7':{v1:103,dist:2314}, '4':{v1:103,dist:2385}, '16':{v1:103,dist:2456}, '27':{v1:104,dist:2727}, '38':{v1:107,dist:3203}},
+                11000: {'-18':{v1:103,dist:2160}, '-7':{v1:103,dist:2227}, '4':{v1:103,dist:2295}, '16':{v1:103,dist:2362}, '27':{v1:103,dist:2592}, '38':{v1:105,dist:2958}},
+                10000: {'-18':{v1:103,dist:2085}, '-7':{v1:103,dist:2152}, '4':{v1:103,dist:2220}, '16':{v1:103,dist:2287}, '27':{v1:103,dist:2493}, '38':{v1:104,dist:2787}}
+            },
+            1000: { // 1000 Pés
+                18300: {'-18':{v1:136,dist:4859}, '-7':{v1:136,dist:5036}, '4':{v1:136,dist:5213}, '16':{v1:136,dist:5544}, '27':{v1:138,dist:6526}, '38':null},
+                18000: {'-18':{v1:134,dist:4697}, '-7':{v1:134,dist:4866}, '4':{v1:134,dist:5036}, '16':{v1:134,dist:5354}, '27':{v1:136,dist:6287}, '38':{v1:141,dist:8200}},
+                17000: {'-18':{v1:128,dist:4154}, '-7':{v1:128,dist:4301}, '4':{v1:128,dist:4447}, '16':{v1:128,dist:4719}, '27':{v1:131,dist:5488}, '38':{v1:135,dist:7000}},
+                16000: {'-18':{v1:122,dist:3676}, '-7':{v1:122,dist:3805}, '4':{v1:122,dist:3934}, '16':{v1:123,dist:4168}, '27':{v1:125,dist:4769}, '38':{v1:129,dist:5913}},
+                15000: {'-18':{v1:116,dist:3230}, '-7':{v1:116,dist:3336}, '4':{v1:116,dist:3438}, '16':{v1:116,dist:3632}, '27':{v1:119,dist:4187}, '38':{v1:123,dist:5150}},
+                14000: {'-18':{v1:110,dist:2842}, '-7':{v1:110,dist:2942}, '4':{v1:110,dist:3042}, '16':{v1:110,dist:3223}, '27':{v1:113,dist:3689}, '38':{v1:117,dist:4428}},
+                13000: {'-18':{v1:104,dist:2462}, '-7':{v1:104,dist:2543}, '4':{v1:104,dist:2624}, '16':{v1:104,dist:2772}, '27':{v1:107,dist:3150}, '38':{v1:111,dist:3750}},
+                12000: {'-18':{v1:103,dist:2314}, '-7':{v1:103,dist:2388}, '4':{v1:103,dist:2461}, '16':{v1:103,dist:2594}, '27':{v1:104,dist:2922}, '38':{v1:108,dist:3463}},
+                11000: {'-18':{v1:103,dist:2228}, '-7':{v1:103,dist:2298}, '4':{v1:103,dist:2367}, '16':{v1:103,dist:2490}, '27':{v1:103,dist:2742}, '38':{v1:106,dist:3173}},
+                10000: {'-18':{v1:103,dist:2153}, '-7':{v1:103,dist:2223}, '4':{v1:103,dist:2292}, '16':{v1:103,dist:2412}, '27':{v1:103,dist:2613}, '38':{v1:104,dist:2938}}
+            },
+            2000: { // 2000 Pés
+                18300: {'-18':{v1:136,dist:5036}, '-7':{v1:136,dist:5215}, '4':{v1:136,dist:5397}, '16':{v1:137,dist:5942}, '27':{v1:139,dist:7110}, '38':null},
+                18000: {'-18':{v1:134,dist:4863}, '-7':{v1:134,dist:5038}, '4':{v1:134,dist:5213}, '16':{v1:135,dist:5732}, '27':{v1:137,dist:6842}, '38':null},
+                17000: {'-18':{v1:128,dist:4298}, '-7':{v1:128,dist:4449}, '4':{v1:128,dist:4600}, '16':{v1:129,dist:5031}, '27':{v1:132,dist:5946}, '38':{v1:136,dist:7930}},
+                16000: {'-18':{v1:122,dist:3803}, '-7':{v1:122,dist:3935}, '4':{v1:122,dist:4068}, '16':{v1:123,dist:4412}, '27':{v1:126,dist:5126}, '38':{v1:131,dist:6586}},
+                15000: {'-18':{v1:116,dist:3332}, '-7':{v1:116,dist:3439}, '4':{v1:116,dist:3546}, '16':{v1:117,dist:3857}, '27':{v1:120,dist:4517}, '38':{v1:124,dist:5645}},
+                14000: {'-18':{v1:110,dist:2942}, '-7':{v1:110,dist:3043}, '4':{v1:110,dist:3145}, '16':{v1:111,dist:3412}, '27':{v1:114,dist:3967}, '38':{v1:118,dist:4767}},
+                13000: {'-18':{v1:104,dist:2542}, '-7':{v1:104,dist:2625}, '4':{v1:104,dist:2708}, '16':{v1:105,dist:2925}, '27':{v1:108,dist:3375}, '38':{v1:112,dist:4025}},
+                12000: {'-18':{v1:103,dist:2387}, '-7':{v1:103,dist:2462}, '4':{v1:103,dist:2537}, '16':{v1:103,dist:2727}, '27':{v1:105,dist:3117}, '38':{v1:109,dist:3720}},
+                11000: {'-18':{v1:103,dist:2296}, '-7':{v1:103,dist:2368}, '4':{v1:103,dist:2439}, '16':{v1:103,dist:2592}, '27':{v1:103,dist:2892}, '38':{v1:107,dist:3391}},
+                10000: {'-18':{v1:103,dist:2221}, '-7':{v1:103,dist:2293}, '4':{v1:103,dist:2364}, '16':{v1:103,dist:2493}, '27':{v1:103,dist:2733}, '38':{v1:105,dist:3095}}
+            }
+        };
 
-            // --- DATA TABLES ---
-            const n1FullPowerTable = [
-                { tempC: -51,n1_values: [84.0, 84.8, 85.6, 86.6, 87.5, 88.3, 89.3, 90.0, 90.8, 92.2, 93.8] }, { tempC: -46,n1_values: [85.0, 85.8, 86.6, 87.6, 88.5, 89.4, 90.3, 91.0, 91.8, 93.3, 94.9] }, { tempC: -40,n1_values: [86.0, 86.8, 87.6, 88.6, 89.6, 90.4, 91.3, 92.1, 92.9, 94.4, 96.0] }, { tempC: -34,n1_values: [86.9, 87.8, 88.6, 89.6, 90.6, 91.5, 92.4, 93.1, 94.0, 95.4, 97.1] }, { tempC: -29,n1_values: [87.9, 88.8, 89.5, 90.6, 91.6, 92.5, 93.4, 94.2, 95.0, 96.5, 98.2] }, { tempC: -23,n1_values: [88.9, 89.8, 90.5, 91.6, 92.6, 93.6, 94.4, 95.2, 96.1, 97.6, 99.2] }, { tempC: -18,n1_values: [89.8, 90.8, 91.6, 92.6, 93.7, 94.6, 95.5, 96.3, 97.2, 98.6, 100.0] }, { tempC: -15,n1_values: [90.4, 91.2, 92.0, 93.1, 94.2, 95.1, 96.0, 96.8, 97.7, 99.2, 100.0] }, { tempC: -12,n1_values: [90.8, 91.8, 92.6, 93.6, 94.7, 95.7, 96.5, 97.4, 98.2, 99.7, 100.0] }, { tempC: -9, n1_values: [91.4, 92.3, 93.0, 94.2, 95.2, 96.2, 97.0, 97.9, 98.7, 100.0, 100.0] }, { tempC: -7, n1_values: [91.9, 92.8, 93.6, 94.7, 95.8, 96.7, 97.6, 98.4, 99.2, 99.8, 99.8] }, { tempC: -4, n1_values: [92.4, 93.4, 94.1, 95.2, 96.3, 97.2, 98.1, 99.0, 99.6, 99.6, 99.6] }, { tempC: -1, n1_values: [92.9, 93.9, 94.6, 95.7, 96.8, 97.8, 98.6, 99.4, 99.4, 99.4, 99.4] }, { tempC: 2,  n1_values: [93.4, 94.4, 95.2, 96.2, 97.3, 98.3, 99.1, 99.1, 99.1, 99.1, 99.1] }, { tempC: 4,  n1_values: [94.0, 95.0, 95.7, 96.7, 97.8, 98.8, 98.8, 98.8, 98.8, 98.8, 98.8] }, { tempC: 7,  n1_values: [94.4, 95.4, 96.2, 97.2, 98.3, 98.6, 98.6, 98.6, 98.6, 98.6, 98.6] }, { tempC: 10, n1_values: [95.0, 96.0, 96.7, 97.8, 98.3, 98.3, 98.3, 98.3, 98.3, 98.3, 98.3] }, { tempC: 13, n1_values: [95.5, 96.5, 97.2, 97.9, 97.9, 97.9, 97.9, 97.9, 97.9, 97.9, 97.9] }, { tempC: 16, n1_values: [96.0, 97.0, 97.5, 97.5, 97.5, 97.5, 97.5, 97.5, 97.5, 97.5, 97.5] }, { tempC: 18, n1_values: [97.1, 97.1, 97.1, 97.1, 97.1, 97.1, 97.1, 97.1, 97.1, 97.1, 97.1] }, { tempC: 21, n1_values: [96.6, 96.6, 96.6, 96.6, 96.6, 96.6, 96.6, 96.6, 96.6, 96.6, 96.6] }, { tempC: 24, n1_values: [96.0, 96.0, 96.0, 96.0, 96.0, 96.0, 96.0, 96.0, 96.0, 96.0, 96.0] }, { tempC: 27, n1_values: [95.4, 95.4, 95.4, 95.4, 95.4, 95.4, 95.4, 95.4, 95.4, 95.4, 95.4] }, { tempC: 29, n1_values: [94.7, 94.7, 94.7, 94.7, 94.7, 94.7, 94.7, 94.7, 94.7, 94.7, 94.7] }, { tempC: 32, n1_values: [94.0, 94.0, 94.0, 94.0, 94.0, 94.0, 94.0, 94.0, 94.0, 94.0, null] }, { tempC: 35, n1_values: [93.1, 93.1, 93.1, 93.1, 93.1, 93.1, 93.1, 93.1, null, null, null] }, { tempC: 38, n1_values: [92.2, 92.2, 92.2, 92.2, 92.2, 92.2, 92.2, null, null, null, null] }, { tempC: 41, n1_values: [91.3, 91.3, 91.3, 91.3, 91.3, 91.3, null, null, null, null, null] }, { tempC: 43, n1_values: [90.4, 90.4, 90.4, 90.4, 90.4, null, null, null, null, null, null] }, { tempC: 46, n1_values: [89.4, 89.4, 89.4, 89.4, null, null, null, null, null, null, null] }, { tempC: 49, n1_values: [88.4, 88.4, 89.4, null, null, null, null, null, null, null, null] }
-            ];
-            const n1PartialPowerTable = {
-                assumedTemps: [10, 20, 30, 40, 50, 60, 70, 80, 90, 100],
-                oatRows: [
-                    { oat: 80, values: [null, null, null, null, null, null, null, null, 93.2, 90.8] }, { oat: 70, values: [null, null, null, null, null, null, null, 94.4, 92.1, 89.9] }, { oat: 60, values: [null, null, null, null, null, 95.6, 93.5, 91.3, 89.0, null] }, { oat: 50, values: [null, null, null, null, 96.6, 94.6, 92.6, 90.4, 88.1, null] }, { oat: 40, values: [null, null, null, 97.4, 95.8, 93.7, 91.8, 89.6, 87.2, null] }, { oat: 30, values: [null, null, 97.9, 96.4, 94.7, 92.8, 90.9, 88.7, 86.4, null] }, { oat: 20, values: [null, 98.3, 96.9, 95.3, 93.8, 91.8, 90.0, 87.9, 85.6, null] }, { oat: 10, values: [98.5, 97.2, 95.9, 94.4, 92.8, 90.9, 89.0, 86.9, 84.6, null] }, { oat: 0,  values: [98.8, 97.6, 96.3, 94.9, 93.4, 91.8, 90.0, 88.1, 85.9, 83.6] }, { oat: -10,values: [97.5, 96.4, 95.2, 93.9, 92.4, 90.7, 88.9, 87.1, 85.0, 82.8] }, { oat: -20,values: [96.5, 95.5, 94.4, 92.9, 91.3, 89.7, 87.9, 86.1, 84.1, 82.0] }, { oat: -30,values: [95.5, 94.4, 93.2, 91.8, 90.3, 88.7, 86.9, 85.1, 83.1, 81.0] }, { oat: -40,values: [94.5, 93.4, 92.2, 90.9, 89.3, 87.7, 85.9, 84.1, 82.1, 80.0] },
-                ]
-            };
-            const takeoffWeightTable = {
-                temps: [0, 20, 40, 60, 80, 100], // in Fahrenheit
-                altitudes: [10000, 9000, 8000, 7000, 6000, 5000, 4000, 3000, 2000, 1000, 0],
-                weights: [ // CORRECTED DATA based on chart arrows
-                    // Temps:  0      20     40      60      80     100
-                    [18300, 18300, 17750, 16800, 14850, null ],    // Alt 10000
-                    [18300, 18300, 18300, 17400, 15400, null ],    // Alt 9000
-                    [18300, 18300, 18300, 17950, 16050, null ],    // Alt 8000
-                    [18300, 18300, 18300, 18300, 16600, null ],    // Alt 7000
-                    [18300, 18300, 18300, 18300, 17300, 15050],    // Alt 6000
-                    [18300, 18300, 18300, 18300, 17900, 15600],    // Alt 5000
-                    [18300, 18300, 18300, 18300, 18300, 16200],    // Alt 4000
-                    [18300, 18300, 18300, 18300, 18300, 16800],    // Alt 3000
-                    [18300, 18300, 18300, 18300, 18300, 17400],    // Alt 2000
-                    [18300, 18300, 18300, 18300, 18300, 18100],    // Alt 1000
-                    [18300, 18300, 18300, 18300, 18300, 18300],    // Alt 0 (S.L.)
-                ]
-            };
+        const vrV2Data = {
+            10000: {vr: 125, v2: 124}, 11000: {vr: 125, v2: 124}, 12000: {vr: 125, v2: 124},
+            13000: {vr: 125, v2: 125}, 14000: {vr: 128, v2: 128}, 15000: {vr: 130, v2: 133},
+            16000: {vr: 134, v2: 137}, 17000: {vr: 138, v2: 141}, 18000: {vr: 142, v2: 145},
+            18300: {vr: 143, v2: 146}
+        };
 
-            // --- TAB SWITCHING LOGIC ---
-            const tabButtons = document.querySelectorAll('.tab-button');
-            const calculators = {
-                full: document.getElementById('calculator-full'),
-                partial: document.getElementById('calculator-partial'),
-                weight: document.getElementById('calculator-weight'),
-            };
+        // --- ELEMENTOS DO DOM ---
+        const altitudeSelect = document.getElementById('altitude');
+        const tempInput = document.getElementById('temperature');
+        const weightInput = document.getElementById('weight');
+        const calculateBtn = document.getElementById('calculate-btn');
+        const resultsDiv = document.getElementById('results');
+        const errorDiv = document.getElementById('error-message');
 
-            tabButtons.forEach(button => {
-                button.addEventListener('click', () => {
-                    tabButtons.forEach(btn => btn.classList.remove('active'));
-                    Object.values(calculators).forEach(calc => calc.classList.add('hidden'));
-                    button.classList.add('active');
-                    const calcId = button.id.split('-')[2];
-                    calculators[calcId].classList.remove('hidden');
-                });
-            });
+        // --- FUNÇÕES DE CÁLCULO ---
 
-            // --- GENERAL HELPER FUNCTIONS ---
-            const animateValue = (obj, start, end, duration, unit = '%', precision = 1) => {
-                let startTimestamp = null;
-                const step = (timestamp) => {
-                    if (!startTimestamp) startTimestamp = timestamp;
-                    const progress = Math.min((timestamp - startTimestamp) / duration, 1);
-                    const currentValue = progress * (end - start) + start;
-                    obj.textContent = `${currentValue.toFixed(precision)}${unit}`;
-                    if (progress < 1) {
-                        window.requestAnimationFrame(step);
-                    }
-                };
-                window.requestAnimationFrame(step);
-            };
+        /**
+         * Interpola linearmente entre dois pontos.
+         * @param {number} x - O ponto de entrada para o qual interpolar.
+         * @param {number} x1 - Ponto de entrada inferior conhecido.
+         * @param {number} y1 - Valor de saída correspondente a x1.
+         * @param {number} x2 - Ponto de entrada superior conhecido.
+         * @param {number} y2 - Valor de saída correspondente a x2.
+         * @returns {number} O valor interpolado y.
+         */
+        function linearInterpolate(x, x1, y1, x2, y2) {
+            if (x1 === x2) return y1; // Evita divisão por zero
+            return y1 + (x - x1) * (y2 - y1) / (x2 - x1);
+        }
 
-             const displayN1Result = (calcType, numericValue, isError = false, errorMessage = '') => {
-                const barDisplay = document.getElementById(`bar-display-${calcType}`);
-                const errorDisplay = document.getElementById(`error-display-${calcType}`);
-                const progressBar = document.getElementById(`n1-progress-bar-${calcType}`);
-                const n1ValueDisplay = document.getElementById(`n1-value-display-${calcType}`);
-
-                if (isError) {
-                    barDisplay.classList.add('hidden');
-                    errorDisplay.classList.remove('hidden');
-                    errorDisplay.innerHTML = `<p class="p-4 bg-red-100 text-red-700 rounded-lg text-center fade-in-up">${errorMessage}</p>`;
-                } else {
-                    barDisplay.classList.remove('hidden');
-                    errorDisplay.classList.add('hidden');
-
-                    let colorClass = 'bg-rose-600'; 
-                    if (numericValue <= 90) { colorClass = 'bg-emerald-500'; } else if (numericValue <= 96) { colorClass = 'bg-amber-400'; }
-                    
-                    progressBar.className = `h-6 rounded-lg ${colorClass}`;
-                    progressBar.style.width = `${numericValue}%`;
-                    
-                    if(n1ValueDisplay && numericValue !== null){
-                        const currentDisplayedValue = parseFloat(n1ValueDisplay.textContent) || 0;
-                        animateValue(n1ValueDisplay, currentDisplayedValue, numericValue, 800);
-                    }
-                }
-            };
+        /**
+         * Encontra os valores que delimitam um valor de entrada em uma matriz ordenada.
+         * @param {number} value - O valor de entrada.
+         * @param {number} array - A matriz de valores conhecidos (deve estar ordenada).
+         * @returns {{lower: number, upper: number}} - Os valores inferior e superior.
+         */
+        function findBracketingValues(value, array) {
+            if (value <= array) return { lower: array, upper: array[1] };
+            if (value >= array[array.length - 1]) return { lower: array[array.length - 2], upper: array[array.length - 1] };
             
-            const toFahrenheit = (celsius) => celsius * 9/5 + 32;
-            const toCelsius = (fahrenheit) => (fahrenheit - 32) * 5/9;
-            const interpolate = (point, p1, v1, p2, v2) => {
-                if (p1 === p2) return v1;
-                if (v1 === null || v2 === null) return null;
-                return v1 + (v2 - v1) * (point - p1) / (p2 - p1);
-            };
-
-
-            // --- FULL POWER CALCULATOR LOGIC ---
-            document.getElementById('calculate-btn-full').addEventListener('click', calculateFullPower);
-            function calculateFullPower() {
-                const altitude = parseFloat(document.getElementById('altitude_full').value);
-                let temperature = parseFloat(document.getElementById('temperature_full').value);
-                const tempUnit = document.getElementById('temp-unit_full').value;
-                if (isNaN(altitude) || isNaN(temperature)) { displayN1Result('full', null, true, "Por favor, preencha todos os campos."); return; }
-                if (tempUnit === 'F') temperature = toCelsius(temperature);
-                if (altitude < 0 || altitude > 10000 || temperature > 49 || temperature < -51) { displayN1Result('full', null, true, "Fora dos limites operacionais. Verifique o manual"); return; }
-                const getAltitudeN1 = (tempRow, alt) => { const altIndex = alt / 1000; const lowerAltIndex = Math.floor(altIndex); const upperAltIndex = Math.ceil(altIndex); const n1AtLowerAlt = tempRow.n1_values[lowerAltIndex]; if (n1AtLowerAlt === null) return null; if (lowerAltIndex === upperAltIndex) return n1AtLowerAlt; const n1AtUpperAlt = tempRow.n1_values[upperAltIndex]; if (n1AtUpperAlt === null) return n1AtLowerAlt; return interpolate(alt, lowerAltIndex * 1000, n1AtLowerAlt, upperAltIndex * 1000, n1AtUpperAlt); };
-                const upperTempRow = n1FullPowerTable.find(row => row.tempC >= temperature); const lowerTempRow = [...n1FullPowerTable].reverse().find(row => row.tempC <= temperature);
-                if (!lowerTempRow || !upperTempRow) { displayN1Result('full', null, true, "Fora dos limites operacionais. Verifique o manual"); return; }
-                if (lowerTempRow.tempC === upperTempRow.tempC) { const finalN1 = getAltitudeN1(lowerTempRow, altitude); if(finalN1 === null) { displayN1Result('full', null, true, "Fora dos limites operacionais. Verifique o manual"); } else { displayN1Result('full', finalN1, false); } return; }
-                const n1AtLowerTemp = getAltitudeN1(lowerTempRow, altitude); if (n1AtLowerTemp === null) { displayN1Result('full', null, true, "Fora dos limites operacionais. Verifique o manual"); return; }
-                const n1AtUpperTemp = getAltitudeN1(upperTempRow, altitude); if (n1AtUpperTemp === null) { displayN1Result('full', n1AtLowerTemp, false); return; }
-                const finalN1 = interpolate(temperature, lowerTempRow.tempC, n1AtLowerTemp, upperTempRow.tempC, n1AtUpperTemp); displayN1Result('full', finalN1, false);
-            }
-
-            // --- PARTIAL POWER CALCULATOR LOGIC ---
-            document.getElementById('calculate-btn-partial').addEventListener('click', calculatePartialPower);
-            function calculatePartialPower() {
-                let oat = parseFloat(document.getElementById('oat_partial').value); const oatUnit = document.getElementById('oat-unit_partial').value; let assumedTemp = parseFloat(document.getElementById('assumed_temp_partial').value); const assumedTempUnit = document.getElementById('assumed-unit_partial').value;
-                if (isNaN(oat) || isNaN(assumedTemp)) { displayN1Result('partial', null, true, "Por favor, preencha todos os campos."); return; }
-                if (oatUnit === 'C') oat = toFahrenheit(oat); if (assumedTempUnit === 'C') assumedTemp = toFahrenheit(assumedTemp);
-                if (oat < -40 || oat > 80 || assumedTemp < 10 || assumedTemp > 100) { displayN1Result('partial', null, true, "Fora dos limites operacionais. Verifique o manual"); return; }
-                const getAssumedTempN1 = (oatRow, temp) => { const assumedTemps = n1PartialPowerTable.assumedTemps; const upperIndex = assumedTemps.findIndex(t => t >= temp); if (upperIndex === -1) { return null; } if (upperIndex === 0) { return oatRow.values[0]; } const lowerIndex = upperIndex - 1; if (assumedTemps[upperIndex] === temp) { return oatRow.values[upperIndex]; } const lowerTemp = assumedTemps[lowerIndex]; const upperTemp = assumedTemps[upperIndex]; const n1AtLower = oatRow.values[lowerIndex]; const n1AtUpper = oatRow.values[upperIndex]; return interpolate(temp, lowerTemp, n1AtLower, upperTemp, n1AtUpper); };
-                const upperOatRow = [...n1PartialPowerTable.oatRows].reverse().find(row => row.oat >= oat); const lowerOatRow = n1PartialPowerTable.oatRows.find(row => row.oat <= oat);
-                if (!lowerOatRow || !upperOatRow) { displayN1Result('partial', null, true, "Fora dos limites operacionais. Verifique o manual"); return; }
-                if (lowerOatRow.oat === upperOatRow.oat) { const finalN1 = getAssumedTempN1(lowerOatRow, assumedTemp); if (finalN1 === null) { displayN1Result('partial', null, true, "Fora dos limites operacionais. Verifique o manual"); } else { displayN1Result('partial', finalN1, false); } return; }
-                const n1AtLowerOat = getAssumedTempN1(lowerOatRow, assumedTemp); const n1AtUpperOat = getAssumedTempN1(upperOatRow, assumedTemp); if (n1AtLowerOat === null || n1AtUpperOat === null) { displayN1Result('partial', null, true, "Fora dos limites operacionais. Verifique o manual"); return; }
-                const finalN1 = interpolate(oat, lowerOatRow.oat, n1AtLowerOat, upperOatRow.oat, n1AtUpperOat); displayN1Result('partial', finalN1, false);
-            }
-
-            // --- WEIGHT LIMIT CALCULATOR LOGIC (CORRECTED) ---
-            document.getElementById('calculate-btn-weight').addEventListener('click', calculateWeightLimit);
-            function calculateWeightLimit() {
-                const altitude = parseFloat(document.getElementById('altitude_weight').value);
-                let temperature = parseFloat(document.getElementById('temperature_weight').value);
-                const tempUnit = document.getElementById('temp-unit_weight').value;
-
-                const displayWeightResult = (numericValue, isError = false, errorMessage = '') => {
-                    const barDisplay = document.getElementById('bar-display-weight');
-                    const errorDisplay = document.getElementById('error-display-weight');
-                    const progressBar = document.getElementById('weight-progress-bar');
-                    const valueDisplay = document.getElementById('weight-value-display');
-
-                    if (isError) {
-                        barDisplay.classList.add('hidden');
-                        errorDisplay.classList.remove('hidden');
-                        errorDisplay.innerHTML = `<p class="p-4 bg-red-100 text-red-700 rounded-lg text-center fade-in-up">${errorMessage}</p>`;
-                    } else {
-                        barDisplay.classList.remove('hidden');
-                        errorDisplay.classList.add('hidden');
-
-                        const MAX_WEIGHT = 18300;
-                        const widthPercentage = (numericValue / MAX_WEIGHT) * 100;
-
-                        let colorClass = 'bg-rose-600';
-                        if (numericValue <= 16500) { colorClass = 'bg-emerald-500'; } 
-                        else if (numericValue <= 17500) { colorClass = 'bg-amber-400';}
-                        
-                        progressBar.className = `h-6 rounded-lg ${colorClass}`;
-                        progressBar.style.width = `${widthPercentage}%`;
-                        
-                        if(valueDisplay && numericValue !== null){
-                            const currentDisplayedValue = parseFloat(valueDisplay.textContent) || 0;
-                            animateValue(valueDisplay, currentDisplayedValue, numericValue, 800, ' lbs', 0);
-                        }
-                    }
-                };
-
-                if (isNaN(altitude) || isNaN(temperature)) {
-                    displayWeightResult(null, true, "Por favor, preencha todos os campos.");
-                    return;
-                }
-                
-                if (tempUnit === 'C') temperature = toFahrenheit(temperature);
-
-                if (altitude < 0 || altitude > 10000 || temperature < 0 || temperature > 100) {
-                    displayWeightResult(null, true, "Fora dos limites operacionais. Verifique o manual");
-                    return;
-                }
-
-                // Bilinear interpolation logic
-                const getWeight = (alt, temp) => {
-                    const altitudes = takeoffWeightTable.altitudes;
-                    const temps = takeoffWeightTable.temps;
-                    const weights = takeoffWeightTable.weights;
-
-                    const y_upper_idx = altitudes.findIndex(a => a <= alt);
-                    if (y_upper_idx === -1) return null;
-                    const y_lower_idx = y_upper_idx > 0 ? y_upper_idx - 1 : 0;
-                    
-                    const x_upper_idx = temps.findIndex(t => t >= temp);
-                    if (x_upper_idx === -1) return null;
-                    const x_lower_idx = x_upper_idx > 0 ? x_upper_idx - 1 : 0;
-                    
-                    const y1 = altitudes[y_lower_idx];
-                    const y2 = altitudes[y_upper_idx];
-                    const x1 = temps[x_lower_idx];
-                    const x2 = temps[x_upper_idx];
-                    
-                    const Q11 = weights[y_lower_idx][x_lower_idx];
-                    const Q12 = weights[y_lower_idx][x_upper_idx];
-                    const Q21 = weights[y_upper_idx][x_lower_idx];
-                    const Q22 = weights[y_upper_idx][x_upper_idx];
-                    
-                    if (alt === y2 && temp === x2 && Q22 !== null) return Q22;
-                    if (alt === y2 && temp === x1 && Q21 !== null) return Q21;
-                    if (alt === y1 && temp === x2 && Q12 !== null) return Q12;
-                    if (alt === y1 && temp === x1 && Q11 !== null) return Q11;
-
-                    const R1 = interpolate(temp, x1, Q11, x2, Q12);
-                    const R2 = interpolate(temp, x1, Q21, x2, Q22);
-                    
-                    if (R1 === null || R2 === null) return null;
-
-                    const finalWeight = interpolate(alt, y1, R1, y2, R2);
-                    return finalWeight;
-                }
-
-                const finalWeight = getWeight(altitude, temperature);
-
-                if (finalWeight === null) {
-                    displayWeightResult(null, true, "Fora dos limites operacionais. Verifique o manual");
-                } else {
-                    displayWeightResult(finalWeight, false);
+            for (let i = 0; i < array.length - 1; i++) {
+                if (value >= array[i] && value <= array[i + 1]) {
+                    return { lower: array[i], upper: array[i + 1] };
                 }
             }
+            return null; // Não deveria acontecer com a validação de entrada
+        }
+
+        // --- LÓGICA PRINCIPAL ---
+        calculateBtn.addEventListener('click', () => {
+            // 1. Obter e validar entradas do usuário
+            const altitude = parseInt(altitudeSelect.value, 10);
+            const temp = parseFloat(tempInput.value);
+            const weight = parseFloat(weightInput.value);
+
+            const tempKeys = Object.keys(performanceData[altitude]).map(parseFloat).sort((a, b) => a - b);
+            const weightKeys = Object.keys(performanceData[altitude]).map(parseFloat).sort((a, b) => b - a);
+            
+            if (isNaN(temp) |
+| isNaN(weight) |
+| weight < weightKeys[weightKeys.length-1] |
+| weight > weightKeys |
+| temp < tempKeys |
+| temp > tempKeys[tempKeys.length-1]) {
+                errorDiv.textContent = 'Valores fora do intervalo da tabela. Por favor, insira valores dentro dos limites: Peso (10,000-18,300 lbs), Temperatura (-18 a 38°C).';
+                errorDiv.style.display = 'block';
+                resultsDiv.classList.add('hidden');
+                return;
+            }
+            
+            errorDiv.style.display = 'none';
+
+            // 2. Encontrar valores delimitadores para interpolação
+            const { lower: lowerWeight, upper: upperWeight } = findBracketingValues(weight, weightKeys.reverse()); // Reverte para ordem crescente
+            const { lower: lowerTemp, upper: upperTemp } = findBracketingValues(temp, tempKeys);
+
+            // 3. Realizar interpolação dupla para V1 e Distância
+            function getPerformanceValue(w, t, valueType) {
+                const dataPoint = performanceData[altitude][w];
+                if (!dataPoint) {
+                    // Se um ponto de dados estiver faltando (ex: 38°C em algumas altitudes),
+                    // tentamos usar o ponto mais próximo disponível para evitar erros.
+                    // Uma abordagem mais sofisticada poderia ser necessária para cenários complexos.
+                    const availableTemps = Object.keys(performanceData[altitude][w]).map(parseFloat).sort((a,b) => Math.abs(t-a) - Math.abs(t-b));
+                    return performanceData[altitude][w].toString()];
+                }
+                return dataPoint;
+            }
+
+            // Interpolar na temperatura para o peso inferior
+            const v1_lower_weight = linearInterpolate(temp, lowerTemp, getPerformanceValue(lowerWeight, lowerTemp, 'v1'), upperTemp, getPerformanceValue(lowerWeight, upperTemp, 'v1'));
+            const dist_lower_weight = linearInterpolate(temp, lowerTemp, getPerformanceValue(lowerWeight, lowerTemp, 'dist'), upperTemp, getPerformanceValue(lowerWeight, upperTemp, 'dist'));
+
+            // Interpolar na temperatura para o peso superior
+            const v1_upper_weight = linearInterpolate(temp, lowerTemp, getPerformanceValue(upperWeight, lowerTemp, 'v1'), upperTemp, getPerformanceValue(upperWeight, upperTemp, 'v1'));
+            const dist_upper_weight = linearInterpolate(temp, lowerTemp, getPerformanceValue(upperWeight, lowerTemp, 'dist'), upperTemp, getPerformanceValue(upperWeight, upperTemp, 'dist'));
+
+            // Interpolar no peso usando os valores já interpolados por temperatura
+            const final_v1 = linearInterpolate(weight, lowerWeight, v1_lower_weight, upperWeight, v1_upper_weight);
+            const final_dist = linearInterpolate(weight, lowerWeight, dist_lower_weight, upperWeight, dist_upper_weight);
+
+            // 4. Interpolar para VR e V2 (baseado apenas no peso)
+            const vrV2WeightKeys = Object.keys(vrV2Data).map(parseFloat).sort((a, b) => a - b);
+            const { lower: lowerVrV2Weight, upper: upperVrV2Weight } = findBracketingValues(weight, vrV2WeightKeys);
+            
+            const final_vr = linearInterpolate(weight, lowerVrV2Weight, vrV2Data[lowerVrV2Weight].vr, upperVrV2Weight, vrV2Data[upperVrV2Weight].vr);
+            const final_v2 = linearInterpolate(weight, lowerVrV2Weight, vrV2Data[lowerVrV2Weight].v2, upperVrV2Weight, vrV2Data[upperVrV2Weight].v2);
+
+            // 5. Exibir os resultados
+            document.getElementById('v1-result').textContent = Math.round(final_v1);
+            document.getElementById('dist-result').textContent = Math.round(final_dist);
+            document.getElementById('vr-result').textContent = Math.round(final_vr);
+            document.getElementById('v2-result').textContent = Math.round(final_v2);
+            
+            resultsDiv.classList.remove('hidden');
         });
+
+        // Dispara um cálculo inicial ao carregar a página com os valores padrão
+        calculateBtn.click();
+
     </script>
 </body>
 </html>
